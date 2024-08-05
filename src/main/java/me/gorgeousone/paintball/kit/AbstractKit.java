@@ -23,7 +23,6 @@ import java.util.UUID;
  * Abstract class that stores basic properties and functions for gun kits.
  */
 public abstract class AbstractKit {
-	private JavaPlugin plugin;
 	protected final KitType kitType;
 	protected int bulletDmg;
 	protected int bulletCount;
@@ -37,8 +36,7 @@ public abstract class AbstractKit {
 	protected final Random rnd = new Random();
 	
 	private final Map<UUID, Long> shootCooldowns;
-	protected AbstractKit(JavaPlugin plugin,
-						  KitType kitType,
+	protected AbstractKit(KitType kitType,
 						  int bulletDmg,
 						  int bulletCount,
 						  float bulletSpeed,
@@ -48,7 +46,6 @@ public abstract class AbstractKit {
 						  Sound gunshotSound,
 						  float gunshotPitchHigh, float gunshotPitchLow)
 	{
-		this.plugin = plugin;
 		this.kitType = kitType;
 		this.bulletDmg = bulletDmg;
 		this.bulletCount = bulletCount;
