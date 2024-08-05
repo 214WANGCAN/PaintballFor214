@@ -153,9 +153,9 @@ public class PbTeam {
 		reviveSkellies.clear();
 		paintNum = 0;
 	}
-	
-	public void paintBlock(Block shotBlock) {
-		TeamUtil.paintBlot(game,this,shotBlock, teamType, 5, 1);
+
+	public void paintBlock(Block shotBlock, int blockCount) {
+		TeamUtil.paintBlot(game,this,shotBlock, teamType, blockCount, 1);
 	}
 	
 	public void damagePlayer(Player target, Player shooter, int bulletDmg) {

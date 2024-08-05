@@ -323,6 +323,7 @@ public class PbGame {
 		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
 		announceWinners(winnerTeam);
 		winnerTeam.getPlayers().forEach(id -> gameStats.setWin(id));
+		haveALook();
 		scheduleRestart();
 	}
 	

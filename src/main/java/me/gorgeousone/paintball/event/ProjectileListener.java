@@ -1,11 +1,13 @@
 package me.gorgeousone.paintball.event;
 
+import me.gorgeousone.paintball.PaintballPlugin;
 import me.gorgeousone.paintball.game.PbGame;
 import me.gorgeousone.paintball.game.PbLobby;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.kit.PbKitHandler;
 import me.gorgeousone.paintball.util.LocationUtil;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -16,6 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -29,7 +33,6 @@ public class ProjectileListener implements Listener {
 	
 	private final JavaPlugin plugin;
 	private final PbLobbyHandler lobbyHandler;
-	
 	public ProjectileListener(JavaPlugin plugin, PbLobbyHandler lobbyHandler) {
 		this.plugin = plugin;
 		this.lobbyHandler = lobbyHandler;
@@ -51,7 +54,8 @@ public class ProjectileListener implements Listener {
 			return;
 		}
 		if (event.getHitBlock() != null) {
-			game.getTeam(playerId).paintBlock(event.getHitBlock());
+
+			game.getTeam(playerId).paintBlock(event.getHitBlock(),getBulletBlockCount(projectile));
 			game.updateTeamCredit();
 			return;
 		}
@@ -100,7 +104,18 @@ public class ProjectileListener implements Listener {
 			return 0;
 		}
 	}
-	
+
+	int getBulletBlockCount(Projectile bullet)
+	{
+		PersistentDataContainer dataContainer = bullet.getPersistentDataContainer();
+		if (dataContainer.has(PaintballPlugin.BULLET_TAG, PersistentDataType.INTEGER)) {
+			Integer bulletCount = dataContainer.get(PaintballPlugin.BULLET_TAG, PersistentDataType.INTEGER);
+			return bulletCount != null ? bulletCount : 0;
+		}
+		return 0;
+	}
+
+
 	@EventHandler()
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		Player player = event.getPlayer();

@@ -46,6 +46,7 @@ import me.gorgeousone.paintball.util.SoundUtil;
 import me.gorgeousone.paintball.util.blocktype.BlockType;
 import me.gorgeousone.paintball.util.version.VersionUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -59,7 +60,7 @@ public final class PaintballPlugin extends JavaPlugin {
 	private PbKitHandler kitHandler;
 	private PbArenaHandler arenaHandler;
 	private CommandTrigger commandTrigger;
-
+	public static NamespacedKey BULLET_TAG;
 	@Override
 	public void onEnable() {
 		setupVersion();
@@ -79,6 +80,8 @@ public final class PaintballPlugin extends JavaPlugin {
 		registerCommands();
 		registerListeners();
 		hookPapi();
+
+		BULLET_TAG = new NamespacedKey(this, "bullet_tag");
 	}
 	
 	@Override

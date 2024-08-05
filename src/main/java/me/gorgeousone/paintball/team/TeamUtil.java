@@ -82,7 +82,7 @@ public class TeamUtil {
 
 		}
 		List<Block> neighbors = getNeighbors(block, range);
-		
+		// 溅射
 		for (int i = 0; i < blockCount - 1; ++i) {
 			if (neighbors.isEmpty()) {
 				break;

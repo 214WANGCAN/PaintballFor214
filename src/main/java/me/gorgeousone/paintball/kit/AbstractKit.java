@@ -1,10 +1,16 @@
 package me.gorgeousone.paintball.kit;
 
+import me.gorgeousone.paintball.PaintballPlugin;
 import me.gorgeousone.paintball.team.PbTeam;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
@@ -17,12 +23,13 @@ import java.util.UUID;
  * Abstract class that stores basic properties and functions for gun kits.
  */
 public abstract class AbstractKit {
-	
+	private JavaPlugin plugin;
 	protected final KitType kitType;
 	protected int bulletDmg;
 	protected int bulletCount;
 	protected float bulletSpeed;
 	protected float bulletSpread;
+	protected int bulletBlockCount;
 	protected final long fireRate;
 	protected final Sound gunshotSound;
 	protected final float gunshotPitchHigh;
@@ -30,20 +37,24 @@ public abstract class AbstractKit {
 	protected final Random rnd = new Random();
 	
 	private final Map<UUID, Long> shootCooldowns;
-	
-	protected AbstractKit(KitType kitType,
-			int bulletDmg,
-			int bulletCount,
-			float bulletSpeed,
-			float bulletSpread,
-			long fireRate,
-			Sound gunshotSound,
-			float gunshotPitchHigh, float gunshotPitchLow) {
+	protected AbstractKit(JavaPlugin plugin,
+						  KitType kitType,
+						  int bulletDmg,
+						  int bulletCount,
+						  float bulletSpeed,
+						  float bulletSpread,
+						  int bulletBlockCount,
+						  long fireRate,
+						  Sound gunshotSound,
+						  float gunshotPitchHigh, float gunshotPitchLow)
+	{
+		this.plugin = plugin;
 		this.kitType = kitType;
 		this.bulletDmg = bulletDmg;
 		this.bulletCount = bulletCount;
 		this.bulletSpeed = bulletSpeed;
 		this.bulletSpread = bulletSpread;
+		this.bulletBlockCount = bulletBlockCount;
 		this.fireRate = fireRate;
 		this.gunshotSound = gunshotSound;
 		this.gunshotPitchHigh = gunshotPitchHigh;
@@ -71,6 +82,9 @@ public abstract class AbstractKit {
 			bullet.setShooter(player);
 			bullet.setVelocity(createVelocity(facing, bulletSpeed, bulletSpread));
 			bullet.setCustomName("" + bulletDmg);
+
+
+			bullet.getPersistentDataContainer().set(PaintballPlugin.BULLET_TAG, PersistentDataType.INTEGER, bulletBlockCount);
 		}
 		playGunshotSound(player, gamePlayers, gunshotPitchLow, gunshotPitchHigh);
 		
