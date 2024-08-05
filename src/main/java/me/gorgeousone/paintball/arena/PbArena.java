@@ -1,6 +1,7 @@
 package me.gorgeousone.paintball.arena;
 
 import me.gorgeousone.paintball.Message;
+import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.ConfigUtil;
 import me.gorgeousone.paintball.util.LocationUtil;
@@ -8,8 +9,12 @@ import me.gorgeousone.paintball.util.SchemUtil;
 import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Team;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +23,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import static me.gorgeousone.paintball.util.LocationUtil.findMidpoint;
 
 /**
  * A class to store and manage the settings of a paintball arena.
@@ -46,7 +53,10 @@ public class PbArena {
 		
 		for (TeamType teamType : TeamType.values()) {
 			teamSpawns.put(teamType, new LinkedList<>());
+
 		}
+
+
 	}
 	
 	public PbArena(PbArena other, String name, Location schemPos) {
@@ -203,5 +213,42 @@ public class PbArena {
 				throw new IllegalArgumentException(Message.TEAM_SPAWN_MISSING.format(name, teamType.displayName));
 			}
 		}
+	}
+
+	public Location getMidSpawnLocation()
+	{
+		Location team1 = null;
+		Location team2 = null;
+		for (TeamType teamType : TeamType.values()) {
+			if(team1 == null)
+				team1 = getSpawns(teamType).get(0);
+			else if (team2 == null)
+				team2 = getSpawns(teamType).get(0);
+			else
+				break;
+		}
+		Location location = findMidpoint(team1,team2);
+		double newY = location.getY() + 50;
+
+		// 设置新的位置
+		Location newLocation = new Location(location.getWorld(), location.getX(), newY, location.getZ());
+		// 设置视角朝下
+		newLocation.setPitch(90);
+
+		createBarrierBelow(newLocation);
+
+		return newLocation;
+	}
+
+	private void createBarrierBelow(Location location) {
+		World world = location.getWorld();
+		if (world == null) return;
+
+		// 获取新位置下方的方块位置
+		Location barrierLocation = location.clone().subtract(0, 1, 0);
+
+		// 创建一个屏障方块
+		Block block = world.getBlockAt(barrierLocation);
+		block.setType(Material.BARRIER); // 使用屏障方块，你可以根据需要更改为其他方块
 	}
 }

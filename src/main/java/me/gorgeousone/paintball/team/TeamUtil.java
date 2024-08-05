@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.team;
 
+import me.gorgeousone.paintball.game.PbGame;
 import me.gorgeousone.paintball.kit.KitType;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -74,11 +75,11 @@ public class TeamUtil {
 	}
 	
 	//TODO make this nicer block patterns :(
-	public static void paintBlot(Block block, TeamType teamType, int blockCount, int range) {
-		World world = block.getWorld();
-		
+	public static void paintBlot(PbGame game, PbTeam team, Block block, TeamType teamType, int blockCount, int range) {
 		if (isTerracotta(block)) {
+			countCredit(block,team,game);
 			paintBlock(block, teamType);
+
 		}
 		List<Block> neighbors = getNeighbors(block, range);
 		
@@ -88,6 +89,7 @@ public class TeamUtil {
 			}
 			int rndIdx = rng.nextInt(neighbors.size());
 			Block neighbor = neighbors.get(rndIdx);
+			countCredit(neighbor,team,game);
 			paintBlock(neighbor, teamType);
 			neighbors.remove(rndIdx);
 		}
@@ -128,5 +130,23 @@ public class TeamUtil {
 	private static boolean isTerracotta(Block block) {
 		String matName = block.getType().name();
 		return matName.contains("STAINED_CLAY") || matName.contains("TERRACOTTA");
+	}
+
+	public static void countCredit(Block block,PbTeam team, PbGame game) {
+		Material material = block.getType();
+
+		if(material == team.getType().blockColor.getType())
+			return;
+
+		PbTeam differTeam = game.getDifferentTeam(team);
+		if(material == differTeam.getType().blockColor.getType())
+		{
+			differTeam.setPaintNum(differTeam.getPaintNum() - 1);
+		}
+
+		team.setPaintNum(team.getPaintNum()+1);
+
+
+
 	}
 }

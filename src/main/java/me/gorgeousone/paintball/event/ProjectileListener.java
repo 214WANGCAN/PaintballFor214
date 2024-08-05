@@ -52,6 +52,7 @@ public class ProjectileListener implements Listener {
 		}
 		if (event.getHitBlock() != null) {
 			game.getTeam(playerId).paintBlock(event.getHitBlock());
+			game.updateTeamCredit();
 			return;
 		}
 		if (!(event.getHitEntity() instanceof Player)) {
@@ -119,7 +120,7 @@ public class ProjectileListener implements Listener {
 				Location from = event.getFrom();
 				Location to = event.getTo();
 
-				if (lobby != null && (from.getWorld() != to.getWorld() || from.distanceSquared(to) > 100)) {
+				if (lobby != null && (from.getWorld() != to.getWorld() )) {
 					//remove player from game synchronously, Paper teleports can be async
 					new BukkitRunnable() {
 						@Override

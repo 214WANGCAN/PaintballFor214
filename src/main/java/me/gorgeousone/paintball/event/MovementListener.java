@@ -24,14 +24,18 @@ public class MovementListener implements Listener {
 	public void onMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		PbGame game = lobbyHandler.getGame(player.getUniqueId());
-		
-		if (game == null || game.getState() != GameState.COUNTING_DOWN) {
+
+
+		if (game == null || !(game.getState() == GameState.COUNTING_DOWN || game.getState() == GameState.OVER)) {
 			return;
 		}
+
+
 		Location from = event.getFrom();
 		Location to = event.getTo();
 		to.setX(from.getX());
 		to.setZ(from.getZ());
+		to.setY(from.getY());
 		event.setTo(to);
 	}
 }

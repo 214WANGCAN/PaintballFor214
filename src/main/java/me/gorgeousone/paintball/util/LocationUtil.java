@@ -74,4 +74,21 @@ public class LocationUtil {
 			return 0;
 		}
 	}
+
+	public static Location findMidpoint(Location loc1, Location loc2) {
+		if (loc1 == null || loc2 == null) {
+			throw new IllegalArgumentException("Locations cannot be null");
+		}
+
+		if (!loc1.getWorld().equals(loc2.getWorld())) {
+			throw new IllegalArgumentException("Locations must be in the same world");
+		}
+
+		World world = loc1.getWorld();
+		double xMid = (loc1.getX() + loc2.getX()) / 2;
+		double yMid = (loc1.getY() + loc2.getY()) / 2;
+		double zMid = (loc1.getZ() + loc2.getZ()) / 2;
+
+		return new Location(world, xMid, yMid, zMid);
+	}
 }

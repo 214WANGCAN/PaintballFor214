@@ -1,6 +1,7 @@
 package me.gorgeousone.paintball.game;
 
 import me.gorgeousone.paintball.CommandTrigger;
+import me.gorgeousone.paintball.ConfigSettings;
 import me.gorgeousone.paintball.GameBoard;
 import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
@@ -11,26 +12,22 @@ import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.kit.PbKitHandler;
 import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.team.TeamType;
+import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.util.SoundUtil;
 import me.gorgeousone.paintball.util.StringUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static me.gorgeousone.paintball.util.LocationUtil.findMidpoint;
 
 /**
  * Class to run all logic in a paintball game, like
@@ -40,7 +37,7 @@ import java.util.stream.Collectors;
  * broadcasting game events.
  */
 public class PbGame {
-	
+	private static final Set<Integer> GAME_INTERVALS = Set.of(60, 30, 15, 5 , 4 , 3 ,2 ,1);
 	private final JavaPlugin plugin;
 	private final PbKitHandler kitHandler;
 	private final CommandTrigger commandTrigger;
@@ -55,6 +52,8 @@ public class PbGame {
 	private GameStats gameStats;
 	private PbTeam winnerTeam;
 	private PbTeam loserTeam;
+	private PbCountdown gameTimeLeft;
+
 
 	public PbGame(
 			JavaPlugin plugin,
@@ -74,6 +73,7 @@ public class PbGame {
 			teams.put(teamType, new PbTeam(teamType, this, plugin, this.kitHandler));
 		}
 		this.equipment = new IngameEquipment(this::onShoot, this::onThrowWaterBomb, kitHandler);
+		this.gameTimeLeft = new PbCountdown(this::onCountdownTick, this::onCountdownEnd, plugin);
 	}
 	
 	public void updateUi() {
@@ -142,7 +142,15 @@ public class PbGame {
 	public Collection<PbTeam> getTeams() {
 		return teams.values();
 	}
-	
+
+	public PbTeam getDifferentTeam(PbTeam inputTeam) {
+		for (PbTeam team : getTeams()) {
+			if (!team.equals(inputTeam)) {
+				return team;
+			}
+		}
+		return null;
+	}
 	public void start(PbArena arenaToPlay, TeamQueue teamQueue, int maxHealthPoints) {
 		if (state != GameState.LOBBYING) {
 			throw new IllegalStateException(Message.LOBBY_RUNNING.format());
@@ -163,8 +171,8 @@ public class PbGame {
 	}
 	
 	private void createScoreboard() {
-		gameBoard = new GameBoard(3 * teams.size() + 1);
-		gameBoard.setTitle("" + ChatColor.GOLD + ChatColor.BOLD + "SUPER PAINTBALL");
+		gameBoard = new GameBoard(4 * teams.size() + 1);
+		gameBoard.setTitle("" + ChatColor.GOLD + ChatColor.BOLD + "颜料大战");
 		allPlayers(p -> gameBoard.addPlayer(p));
 		int i = 2;
 		
@@ -179,9 +187,11 @@ public class PbGame {
 				Player player = Bukkit.getPlayer(playerId);
 				boardTeam.addEntry(player.getName());
 			}
-			gameBoard.setLine(i, Message.UI_ALIVE_PLAYERS.format(team.getAlivePlayers().size()) + StringUtil.pad(i));
-			gameBoard.setLine(i + 1, teamType.displayName);
-			i += 3;
+			int teamPercent = (int) (team.getPaintNum() / (double) totalTeamCredit() * 100);
+			gameBoard.setLine(i, "§6已上色: "+ team.getType().prefixColor +  teamPercent + "%" + StringUtil.pad(i));
+			gameBoard.setLine(i + 1, Message.UI_ALIVE_PLAYERS.format(team.getAlivePlayers().size()) + StringUtil.pad(i));
+			gameBoard.setLine(i + 2, teamType.displayName);
+			i += 4;
 		}
 	}
 	
@@ -216,7 +226,7 @@ public class PbGame {
 	private void setRunning() {
 		allPlayers(p -> p.playSound(p.getLocation(), SoundUtil.GAME_START_SOUND, 1.5f, 2f));
 		state = GameState.RUNNING;
-		
+		gameTimeLeft.start(ConfigSettings.GAME_TIME);
 		for (PbTeam team : teams.values()) {
 			if (team.getAlivePlayers().isEmpty()) {
 				onTeamKill(team);
@@ -300,6 +310,8 @@ public class PbGame {
 		if (state != GameState.RUNNING) {
 			return;
 		}
+		gameTimeLeft.cancel();
+
 		loserTeam = killedTeam;
 
 		for (PbTeam team : teams.values()) {
@@ -328,6 +340,7 @@ public class PbGame {
 		BukkitRunnable restartTimer = new BukkitRunnable() {
 			@Override
 			public void run() {
+
 				gameStats.save(plugin);
 				state = GameState.LOBBYING;
 				commandTrigger.triggerGameEndCommands();
@@ -335,6 +348,7 @@ public class PbGame {
 				commandTrigger.triggerPlayerLoseCommands(loserTeam);
 				teams.values().forEach(PbTeam::reset);
 				allPlayers(p -> {
+					showPlayer(p);
 					gameBoard.removePlayer(p);
 					playedArena.resetSchem();
 					onGameEnd.run();
@@ -354,11 +368,23 @@ public class PbGame {
 		for (TeamType teamType : teams.keySet()) {
 			PbTeam team = teams.get(teamType);
 			//padding is for creating unique text :(
-			gameBoard.setLine(i, Message.UI_ALIVE_PLAYERS.format(team.getAlivePlayers().size()) + StringUtil.pad(i));
-			i += 3;
+			gameBoard.setLine(i+1, Message.UI_ALIVE_PLAYERS.format(team.getAlivePlayers().size()) + StringUtil.pad(i));
+			i += 4;
 		}
 	}
-	
+	public void updateTeamCredit() {
+		if (state == GameState.LOBBYING) {
+			return;
+		}
+		int i = 2;
+
+		for (TeamType teamType : teams.keySet()) {
+			PbTeam team = teams.get(teamType);
+			int teamPercent = (int) (team.getPaintNum() / (double) totalTeamCredit() * 100);
+			gameBoard.setLine(i, "§6已上色: "+ team.getType().prefixColor +  teamPercent + "%" + StringUtil.pad(i));
+			i += 4;
+		}
+	}
 	public void hidePlayer(Player player) {
 		allPlayers(p -> p.hidePlayer(player));
 	}
@@ -384,5 +410,61 @@ public class PbGame {
 	
 	public PbArena getPlayedArena() {
 		return playedArena;
+	}
+
+	public int totalTeamCredit()
+	{
+		int count = 0;
+		for (TeamType teamType : teams.keySet()) {
+			PbTeam team = teams.get(teamType);
+			count += team.getPaintNum();
+		}
+		return count;
+	}
+
+	private void onCountdownTick(int secondsLeft) {
+
+
+		if (GAME_INTERVALS.contains(secondsLeft))
+		{
+			allPlayers(p -> {
+				p.sendMessage("§c游戏剩余时间: "+secondsLeft+"s");
+				p.playSound(p.getLocation(), SoundUtil.COUNTDOWN_SOUND, .5f, 1f);
+			});
+		}
+	}
+
+	private void onCountdownEnd()
+	{
+		winnerTeam = findTeamWithMostPaints();
+		for (PbTeam team : teams.values()) {
+			if (team != winnerTeam) {
+				loserTeam = team;
+				break;
+			}
+		}
+
+		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
+		announceWinners(winnerTeam);
+		winnerTeam.getPlayers().forEach(id -> gameStats.setWin(id));
+		haveALook();
+		scheduleRestart();
+
+	}
+	public void haveALook()
+	{
+		Location loc = playedArena.getMidSpawnLocation();
+		allPlayers(p ->{
+			p.teleport(loc);
+			hidePlayer(p);
+		});
+	}
+	public PbTeam findTeamWithMostPaints() {
+		// 使用 Java Streams API 找到涂色块最多的团队
+		Optional<PbTeam> teamWithMostPaints = teams.values().stream()
+				.max(Comparator.comparingInt(PbTeam::getPaintNum));
+
+		// 返回找到的团队，或者可以根据需要处理 Optional
+		return teamWithMostPaints.orElse(null);
 	}
 }

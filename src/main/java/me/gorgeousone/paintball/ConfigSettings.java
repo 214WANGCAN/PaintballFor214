@@ -18,6 +18,7 @@ public class ConfigSettings {
 	public static int MAX_PLAYERS;
 	public static int PLAYER_HEALTH_POINTS;
 	public static int WATER_BOMB_COUNT;
+	public static int GAME_TIME;
 	public static String CHAT_PREFIX_ALIVE;
 	public static String CHAT_PREFIX_DEAD;
 	
@@ -84,6 +85,7 @@ public class ConfigSettings {
 		MAX_PLAYERS = clamp(gameSection.getInt("max-players"), MIN_PLAYERS, 24);
 		PLAYER_HEALTH_POINTS = clamp(gameSection.getInt("player-health-points"), 2, 20);
 		WATER_BOMB_COUNT = clamp(gameSection.getInt("water-bombs", 3), 0, 100);
+		GAME_TIME = clamp(gameSection.getInt("game-time", 3), 0, 10000);
 
 		ConfigurationSection prefixSection = config.getConfigurationSection("chat-prefix");
 		CHAT_PREFIX_ALIVE = prefixSection.getString("alive").replace('&', '§');

@@ -50,6 +50,9 @@ public class PbTeam {
 	//key: armorstand, value: player
 	private final Map<UUID, UUID> reviveSkellies;
 	private final Random rng = new Random();
+
+	// Paint count
+	private int paintNum;
 	
 	public PbTeam(TeamType teamType, PbGame game, JavaPlugin plugin, PbKitHandler kitHandler) {
 		this.teamType = teamType;
@@ -62,6 +65,8 @@ public class PbTeam {
 		this.uncoloredArmorSlots = new HashMap<>();
 		this.reviveSkellies = new HashMap<>();
 		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor, ChatColor.WHITE + Message.UI_TEAM + " " + teamType.displayName);
+
+		this.paintNum = 0;
 	}
 	
 	public void startGame(List<Location> spawns, int maxHealthPoints) {
@@ -146,10 +151,11 @@ public class PbTeam {
 		uncoloredArmorSlots.clear();
 		reviveSkellies.keySet().forEach(id -> Bukkit.getEntity(id).remove());
 		reviveSkellies.clear();
+		paintNum = 0;
 	}
 	
 	public void paintBlock(Block shotBlock) {
-		TeamUtil.paintBlot(shotBlock, teamType, 5, 1);
+		TeamUtil.paintBlot(game,this,shotBlock, teamType, 5, 1);
 	}
 	
 	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
@@ -212,7 +218,7 @@ public class PbTeam {
 		inv.setArmorContents(playerAmor);
 	}
 	
-	private void setSpectator(Player player, boolean isSpectator) {
+	public void setSpectator(Player player, boolean isSpectator) {
 		player.setCollidable(!isSpectator);
 		player.setAllowFlight(isSpectator);
 		player.setFlying(isSpectator);
@@ -278,5 +284,13 @@ public class PbTeam {
 		inv.setItem(1, PbKitHandler.getWaterBombs());
 		inv.setItem(8, teamArmorSet[2]);
 		inv.setArmorContents(teamArmorSet);
+	}
+
+	public int getPaintNum() {
+		return paintNum;
+	}
+
+	public void setPaintNum(int paintNum) {
+		this.paintNum = paintNum;
 	}
 }
