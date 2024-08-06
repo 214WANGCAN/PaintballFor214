@@ -445,15 +445,54 @@ public class PbGame {
 			}
 		}
 
-		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
-		announceWinners(winnerTeam);
-		winnerTeam.getPlayers().forEach(id -> gameStats.setWin(id));
+		allPlayers(p -> {
+			p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f);
+		});
+		countingBlock();
 		haveALook();
 		scheduleRestart();
-
 	}
+	public void countingBlock()
+	{
+		int t1 = (int) (teams.get(TeamType.ICE).getPaintNum() / (double) totalTeamCredit() * 100);
+		int t2 = (int) (teams.get(TeamType.EMBER).getPaintNum() / (double) totalTeamCredit() * 100);
+
+		new BukkitRunnable() {
+
+			int t1Count = 0;
+			int t2Count = 0;
+			@Override
+			public void run() {
+				// 在此处编写你的动画逻辑
+				if(t1Count < t1)
+					t1Count++;
+				if(t2Count < t2)
+					t2Count++;
+
+				allPlayers(p -> {
+					p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, .5f, 1f);
+					// 硬编码
+					p.sendTitle("§e本场游戏的胜者是?", "§b"+t1Count+"% §f- §c"+t2Count+"%", 0, 2, 0);
+				});
+
+				if (t1Count >= t1 && t2Count >= t2) {
+					this.cancel();
+					allPlayers(p -> {
+						p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, .5f, 2f);
+						p.sendTitle(Message.UI_TITLE_WINNER.format(winnerTeam.getType().displayName + ChatColor.WHITE),"§b"+t1Count+"% §f- §c"+t2Count+"%");
+					});
+
+					winnerTeam.getPlayers().forEach(id -> gameStats.setWin(id));
+				}
+			}
+		}.runTaskTimer(plugin, 0, 1);
+	}
+
+
+
 	public void haveALook()
 	{
+		state = GameState.OVER;
 		Location loc = playedArena.getMidSpawnLocation();
 		allPlayers(p ->{
 			p.teleport(loc);
