@@ -38,6 +38,7 @@ public class PbKitHandler {
 		KITS.put(KitType.RIFLE, new RifleKit());
 		KITS.put(KitType.SHOTGUN, new ShotgunKit(plugin));
 		KITS.put(KitType.MACHINE_GUN, new MachineGunKit(plugin));
+		KITS.put(KitType.SUBMACHINE_GUN, new SubMachineGunKit(plugin));
 		//		KITS.put(KitType.SNIPER, new SniperKit());
 	}
 	

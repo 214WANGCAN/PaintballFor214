@@ -17,7 +17,8 @@ public enum KitType {
 	
 	RIFLE(69420),
 	SHOTGUN(69421),
-	MACHINE_GUN(69422);
+	MACHINE_GUN(69422),
+	SUBMACHINE_GUN(69423);
 	//	SNIPER;
 	
 	public String gunName;
@@ -62,6 +63,7 @@ public enum KitType {
 		RIFLE.setDescription(Message.NAME_RIFLE, Message.LORE_RIFLE);
 		SHOTGUN.setDescription(Message.NAME_SHOTGUN, Message.LORE_SHOTGUN);
 		MACHINE_GUN.setDescription(Message.NAME_MACHINE_GUN, Message.LORE_MACHINE_GUN);
+		SUBMACHINE_GUN.setDescription("彩弹冲锋枪", "高射速低稳定性 但上色率低 自带速度2");
 //		SNIPER_RILE.setDescription(ChatColor.YELLOW + "Paintball Sniper", "Long range sniper rifle.", "Higher damage the longer scoped (sneak).")
 	}
 	
@@ -69,6 +71,8 @@ public enum KitType {
 		RIFLE.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("IRON_BARDING") : Material.valueOf("IRON_HORSE_ARMOR"));
 		SHOTGUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("GOLD_BARDING") : Material.valueOf("GOLDEN_HORSE_ARMOR"));
 		MACHINE_GUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("DIAMOND_BARDING") : Material.valueOf("DIAMOND_HORSE_ARMOR"));
+		SUBMACHINE_GUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("DIAMOND_BARDING") : Material.valueOf("LEATHER_HORSE_ARMOR"));
+
 		//		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
 	}
 	
