@@ -29,6 +29,7 @@ public abstract class AbstractKit {
 	protected float bulletSpeed;
 	protected float bulletSpread;
 	protected int bulletBlockCount;
+	protected float bulletMaxDist;
 	protected final long fireRate;
 	protected final Sound gunshotSound;
 	protected final float gunshotPitchHigh;
@@ -42,6 +43,7 @@ public abstract class AbstractKit {
 						  float bulletSpeed,
 						  float bulletSpread,
 						  int bulletBlockCount,
+						  float bulletMaxDist,
 						  long fireRate,
 						  Sound gunshotSound,
 						  float gunshotPitchHigh, float gunshotPitchLow)
@@ -52,6 +54,7 @@ public abstract class AbstractKit {
 		this.bulletSpeed = bulletSpeed;
 		this.bulletSpread = bulletSpread;
 		this.bulletBlockCount = bulletBlockCount;
+		this.bulletMaxDist = bulletMaxDist;
 		this.fireRate = fireRate;
 		this.gunshotSound = gunshotSound;
 		this.gunshotPitchHigh = gunshotPitchHigh;
@@ -59,11 +62,12 @@ public abstract class AbstractKit {
 		this.shootCooldowns = new HashMap<>();
 	}
 	
-	public void updateSpecs(int bulletCount, float bulletDmg, float bulletSpeed, float bulletSpread) {
+	public void updateSpecs(int bulletCount, float bulletDmg, float bulletSpeed, float bulletSpread, float bulletMaxDist) {
 		this.bulletCount = bulletCount;
 		this.bulletDmg = bulletDmg;
 		this.bulletSpeed = bulletSpeed;
 		this.bulletSpread = bulletSpread;
+		this.bulletMaxDist = bulletMaxDist;
 	}
 	
 	public boolean launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
@@ -80,8 +84,9 @@ public abstract class AbstractKit {
 			bullet.setVelocity(createVelocity(facing, bulletSpeed, bulletSpread));
 			bullet.setCustomName("" + bulletDmg);
 
-
-			bullet.getPersistentDataContainer().set(PaintballPlugin.BULLET_TAG, PersistentDataType.INTEGER, bulletBlockCount);
+			PersistentDataContainer dataContainer = bullet.getPersistentDataContainer();
+			dataContainer.set(PaintballPlugin.BULLET_TAG, PersistentDataType.INTEGER, bulletBlockCount);
+			dataContainer.set(PaintballPlugin.BULLET_MAXDIST, PersistentDataType.FLOAT, bulletMaxDist);
 		}
 		playGunshotSound(player, gamePlayers, gunshotPitchLow, gunshotPitchHigh);
 		

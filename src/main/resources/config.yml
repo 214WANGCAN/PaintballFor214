@@ -1,10 +1,10 @@
 countdown:
-    seconds: 60
+    seconds: 30
 game:
     min-players: 2
     max-players: 16
     player-health-points: 8
-    water-bombs: 3
+    water-bombs: 16
     game-time: 120
 chat-prefix:
     alive: "%team-color%<%player%>&r"
@@ -14,18 +14,27 @@ kit-settings:
         bullet-dmg: 3
         bullet-speed: 3.0
         bullet-spread: 0.01
+        bullet-maxdist: 100
         player-speed: 1
     shotgun:
         bullet-count: 6
-        bullet-dmg: 1
+        bullet-dmg: 0.8
         bullet-speed: 1.25
         bullet-spread: 0.35
+        bullet-maxdist: 15
         player-speed: 1
     machine-gun:
         bullet-dmg: 1
         bullet-speed: 2.25
         max-bullet-spread: 0.2
+        bullet-maxdist: 50
         player-speed: 1
+    sub-machine-gun:
+        bullet-dmg: 0.1
+        bullet-speed: 1.0
+        max-bullet-spread: 0.3
+        bullet-maxdist: 25
+        player-speed: 2
 command-triggers:
     game-end-commands: []
     player-win-commands: []

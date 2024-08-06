@@ -413,8 +413,7 @@ public class PbGame {
 		return playedArena;
 	}
 
-	public int totalTeamCredit()
-	{
+	public int totalTeamCredit() {
 		int count = 0;
 		for (TeamType teamType : teams.keySet()) {
 			PbTeam team = teams.get(teamType);
@@ -424,10 +423,7 @@ public class PbGame {
 	}
 
 	private void onCountdownTick(int secondsLeft) {
-
-
-		if (GAME_INTERVALS.contains(secondsLeft))
-		{
+		if (GAME_INTERVALS.contains(secondsLeft)) {
 			allPlayers(p -> {
 				p.sendMessage("§c游戏剩余时间: "+secondsLeft+"s");
 				p.playSound(p.getLocation(), SoundUtil.COUNTDOWN_SOUND, .5f, 1f);
@@ -435,8 +431,7 @@ public class PbGame {
 		}
 	}
 
-	private void onCountdownEnd()
-	{
+	private void onCountdownEnd() {
 		winnerTeam = findTeamWithMostPaints();
 		for (PbTeam team : teams.values()) {
 			if (team != winnerTeam) {
@@ -452,8 +447,8 @@ public class PbGame {
 		haveALook();
 		scheduleRestart();
 	}
-	public void countingBlock()
-	{
+
+	public void countingBlock() {
 		int t1 = (int) (teams.get(TeamType.ICE).getPaintNum() / (double) totalTeamCredit() * 100);
 		int t2 = (int) (teams.get(TeamType.EMBER).getPaintNum() / (double) totalTeamCredit() * 100);
 
@@ -488,10 +483,7 @@ public class PbGame {
 		}.runTaskTimer(plugin, 0, 1);
 	}
 
-
-
-	public void haveALook()
-	{
+	public void haveALook() {
 		state = GameState.OVER;
 		Location loc = playedArena.getMidSpawnLocation();
 		allPlayers(p ->{

@@ -18,7 +18,7 @@ public class ShotgunKit extends AbstractKit {
 	private final JavaPlugin plugin;
 	
 	public ShotgunKit(JavaPlugin plugin) {
-		super(KitType.SHOTGUN, 1, 8, 1.25f, .35f, 5,30, Sound.ENTITY_CHICKEN_EGG, 1f, .85f);
+		super(KitType.SHOTGUN, 1, 8, 1.25f, .35f, 5, 25, 30, Sound.ENTITY_CHICKEN_EGG, 1f, .85f);
 		this.plugin = plugin;
 	}
 	

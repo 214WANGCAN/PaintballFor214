@@ -43,9 +43,10 @@ public class PbKitHandler {
 	}
 	
 	public void updateConfigKitVals() {
-		getKit(KitType.RIFLE).updateSpecs(1, ConfigSettings.RIFLE_BULLET_DMG, ConfigSettings.RIFLE_BULLET_SPEED, ConfigSettings.RIFLE_BULLET_SPREAD);
-		getKit(KitType.SHOTGUN).updateSpecs(ConfigSettings.SHOTGUN_BULLET_COUNT, ConfigSettings.SHOTGUN_BULLET_DMG, ConfigSettings.SHOTGUN_BULLET_SPEED, ConfigSettings.SHOTGUN_BULLET_SPREAD);
-		getKit(KitType.MACHINE_GUN).updateSpecs(1, ConfigSettings.MACHINE_GUN_BULLET_DMG, ConfigSettings.MACHINE_GUN_BULLET_SPEED, ConfigSettings.MACHINE_GUN_MAX_BULLET_SPREAD);
+		getKit(KitType.RIFLE).updateSpecs(1, ConfigSettings.RIFLE_BULLET_DMG, ConfigSettings.RIFLE_BULLET_SPEED, ConfigSettings.RIFLE_BULLET_SPREAD, ConfigSettings.RIFLE_BULLET_MAXDIST);
+		getKit(KitType.SHOTGUN).updateSpecs(ConfigSettings.SHOTGUN_BULLET_COUNT, ConfigSettings.SHOTGUN_BULLET_DMG, ConfigSettings.SHOTGUN_BULLET_SPEED, ConfigSettings.SHOTGUN_BULLET_SPREAD, ConfigSettings.SHOTGUN_BULLET_MAXDIST);
+		getKit(KitType.MACHINE_GUN).updateSpecs(1, ConfigSettings.MACHINE_GUN_BULLET_DMG, ConfigSettings.MACHINE_GUN_BULLET_SPEED, ConfigSettings.MACHINE_GUN_MAX_BULLET_SPREAD, ConfigSettings.MACHINE_GUN_BULLET_MAXDIST);
+		getKit(KitType.SUBMACHINE_GUN).updateSpecs(1, ConfigSettings.SUB_MACHINE_GUN_BULLET_DMG, ConfigSettings.SUB_MACHINE_GUN_BULLET_SPEED, ConfigSettings.SUB_MACHINE_GUN_BULLET_SPREAD, ConfigSettings.SUB_MACHINE_GUN_BULLET_MAXDIST);
 		WATER_BOMBS = createWaterBombs();
 	}
 	

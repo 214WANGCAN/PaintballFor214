@@ -61,6 +61,7 @@ public final class PaintballPlugin extends JavaPlugin {
 	private PbArenaHandler arenaHandler;
 	private CommandTrigger commandTrigger;
 	public static NamespacedKey BULLET_TAG;
+	public static NamespacedKey BULLET_MAXDIST;
 	@Override
 	public void onEnable() {
 		setupVersion();
@@ -82,6 +83,7 @@ public final class PaintballPlugin extends JavaPlugin {
 		hookPapi();
 
 		BULLET_TAG = new NamespacedKey(this, "bullet_tag");
+		BULLET_MAXDIST = new NamespacedKey(this, "bullet_max_dist");
 	}
 	
 	@Override

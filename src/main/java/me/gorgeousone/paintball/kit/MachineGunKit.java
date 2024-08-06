@@ -29,7 +29,7 @@ public class MachineGunKit extends AbstractKit {
 	private static final int RELOAD_RATE = 2;
 	
 	public MachineGunKit(JavaPlugin plugin) {
-		super(KitType.MACHINE_GUN, 1, 1, 2.25f, .2f,3, 3,Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
+		super(KitType.MACHINE_GUN, 1, 1, 2.25f, .2f,3, 100,3, Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
 		this.magazines = new HashMap<>();
 		this.lastShots = new HashMap<>();
 		startReloadAnimator(plugin);
