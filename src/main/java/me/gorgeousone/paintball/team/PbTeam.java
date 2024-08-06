@@ -43,8 +43,8 @@ public class PbTeam {
 	private final ItemStack[] teamArmorSet;
 	private final Set<UUID> players;
 	private final Set<UUID> alivePlayers;
-	private final Map<UUID, Integer> playerHealth;
-	private int maxHealthPoints;
+	private final Map<UUID, Float> playerHealth;
+	private float maxHealthPoints;
 	
 	private final Map<UUID, List<Integer>> uncoloredArmorSlots;
 	//key: armorstand, value: player
@@ -158,17 +158,19 @@ public class PbTeam {
 		TeamUtil.paintBlot(game,this,shotBlock, teamType, blockCount, 1);
 	}
 	
-	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
+	public void damagePlayer(Player target, Player shooter, float bulletDmg) {
 		UUID targetId = target.getUniqueId();
-		
+
+		//System.out.println(target.getDisplayName() + bulletDmg);
+
 		if (!alivePlayers.contains(targetId)) {
 			return;
 		}
 		shooter.playSound(shooter.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
-		int healthPoints = playerHealth.get(targetId);
+		float healthPoints = playerHealth.get(targetId);
 		
 		if (bulletDmg < healthPoints) {
-			int newHealth = healthPoints - bulletDmg;
+			float newHealth = healthPoints - bulletDmg;
 			playerHealth.put(targetId, newHealth);
 			paintArmor(targetId);
 			
@@ -206,7 +208,7 @@ public class PbTeam {
 		PlayerInventory inv = player.getInventory();
 		ItemStack[] playerAmor = inv.getArmorContents();
 		List<Integer> uncoloredSlots = uncoloredArmorSlots.get(playerId);
-		int healthPoints = playerHealth.get(playerId);
+		float healthPoints = playerHealth.get(playerId);
 		int newSlotCount = (int) Math.ceil(4f * healthPoints / maxHealthPoints);
 		int oldSlotCount = uncoloredSlots.size();
 		

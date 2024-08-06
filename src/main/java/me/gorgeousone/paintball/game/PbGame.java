@@ -260,7 +260,7 @@ public class PbGame {
 		}
 	}
 	
-	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
+	public void damagePlayer(Player target, Player shooter, float bulletDmg) {
 		PbTeam team = getTeam(target.getUniqueId());
 		UUID shooterId = shooter.getUniqueId();
 		

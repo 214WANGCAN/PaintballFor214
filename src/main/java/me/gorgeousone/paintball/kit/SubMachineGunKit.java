@@ -21,11 +21,9 @@ import java.util.UUID;
  */
 public class SubMachineGunKit extends AbstractKit {
 	public SubMachineGunKit(JavaPlugin plugin) {
-		super(KitType.SUBMACHINE_GUN, 1, 1, 1f, .3f,1, 3,Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
+		super(KitType.SUBMACHINE_GUN, (float)0.1, 1, 1f, .3f,1, 3,Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
 	}
-	
 
-	
 	@Override
 	public void prepPlayer(Player player) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 1, false, false, false));

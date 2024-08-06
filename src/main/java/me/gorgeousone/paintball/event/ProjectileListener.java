@@ -48,7 +48,7 @@ public class ProjectileListener implements Listener {
 		Player shooter = (Player) projectile.getShooter();
 		UUID playerId = shooter.getUniqueId();
 		PbGame game = lobbyHandler.getGame(playerId);
-		int bulletDmg = getBulletDmg(projectile);
+		float bulletDmg = getBulletDmg(projectile);
 		
 		if (game == null || bulletDmg == 0) {
 			return;
@@ -92,14 +92,15 @@ public class ProjectileListener implements Listener {
 		}
 	}
 	
-	int getBulletDmg(Projectile bullet) {
+	float getBulletDmg(Projectile bullet) {
 		String bulletName = bullet.getCustomName();
 		
 		if (bulletName == null) {
 			return 0;
 		}
 		try {
-			return Integer.parseInt(bulletName);
+			//return Integer.parseInt(bulletName);
+			return Float.parseFloat(bulletName);
 		} catch (NumberFormatException e) {
 			return 0;
 		}

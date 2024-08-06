@@ -24,7 +24,7 @@ import java.util.UUID;
  */
 public abstract class AbstractKit {
 	protected final KitType kitType;
-	protected int bulletDmg;
+	protected float bulletDmg;
 	protected int bulletCount;
 	protected float bulletSpeed;
 	protected float bulletSpread;
@@ -37,7 +37,7 @@ public abstract class AbstractKit {
 	
 	private final Map<UUID, Long> shootCooldowns;
 	protected AbstractKit(KitType kitType,
-						  int bulletDmg,
+						  float bulletDmg,
 						  int bulletCount,
 						  float bulletSpeed,
 						  float bulletSpread,
@@ -59,7 +59,7 @@ public abstract class AbstractKit {
 		this.shootCooldowns = new HashMap<>();
 	}
 	
-	public void updateSpecs(int bulletCount, int bulletDmg, float bulletSpeed, float bulletSpread) {
+	public void updateSpecs(int bulletCount, float bulletDmg, float bulletSpeed, float bulletSpread) {
 		this.bulletCount = bulletCount;
 		this.bulletDmg = bulletDmg;
 		this.bulletSpeed = bulletSpeed;
