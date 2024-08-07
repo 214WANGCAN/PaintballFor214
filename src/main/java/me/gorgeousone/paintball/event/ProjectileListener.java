@@ -65,7 +65,7 @@ public class ProjectileListener implements Listener {
 				double dist = loc.distance(launchLoc);
 
 				if (dist > bulletMaxDist && bulletMaxDist != -1f) {
-					System.out.println(dist+" > "+bulletMaxDist);
+					//System.out.println(dist+" > "+bulletMaxDist);
 					projectile.remove();
 					cancel();
 				}
