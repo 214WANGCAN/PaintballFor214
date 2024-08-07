@@ -26,18 +26,26 @@ public class ConfigSettings {
 	public static float RIFLE_BULLET_DMG;
 	public static float RIFLE_BULLET_SPEED;
 	public static float RIFLE_BULLET_SPREAD;
+	public static float RIFLE_BULLET_MAXDIST;
 
 	public static int SHOTGUN_PLAYER_SPEED;
-	public static int SHOTGUN_BULLET_COUNT;
 	public static float SHOTGUN_BULLET_DMG;
 	public static float SHOTGUN_BULLET_SPEED;
 	public static float SHOTGUN_BULLET_SPREAD;
+	public static float SHOTGUN_BULLET_MAXDIST;
+	public static int SHOTGUN_BULLET_COUNT;
 
 	public static int MACHINE_GUN_PLAYER_SPEED;
 	public static float MACHINE_GUN_BULLET_DMG;
 	public static float MACHINE_GUN_BULLET_SPEED;
 	public static float MACHINE_GUN_MAX_BULLET_SPREAD;
+	public static float MACHINE_GUN_BULLET_MAXDIST;
 
+	public static int SUB_MACHINE_GUN_PLAYER_SPEED;
+	public static float SUB_MACHINE_GUN_BULLET_DMG;
+	public static float SUB_MACHINE_GUN_BULLET_SPEED;
+	public static float SUB_MACHINE_GUN_BULLET_SPREAD;
+	public static float SUB_MACHINE_GUN_BULLET_MAXDIST;
 
 	/**
 	 * Loads the schematics directory defined in config.yml
@@ -97,17 +105,26 @@ public class ConfigSettings {
 		RIFLE_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("rifle.bullet-speed"), 0f, 5f);
 		RIFLE_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("rifle.bullet-spread"), 0f, 1f);
 		RIFLE_PLAYER_SPEED = clamp(kitSettingsSection.getInt("rifle.player-speed"), 0, 3) - 1;
+		RIFLE_BULLET_MAXDIST = clamp((float) kitSettingsSection.getDouble("rifle.bullet-maxdist"), 0f, 1000f);
 
 		SHOTGUN_BULLET_COUNT = clamp(kitSettingsSection.getInt("shotgun.bullet-count"), 1, 100);
 		SHOTGUN_BULLET_DMG = clamp((float) kitSettingsSection.getDouble("shotgun.bullet-dmg"), 0f, 100f);
 		SHOTGUN_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("shotgun.bullet-speed"), 0f, 5f);
 		SHOTGUN_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("shotgun.bullet-spread"), 0f, 1f);
 		SHOTGUN_PLAYER_SPEED = clamp(kitSettingsSection.getInt("shotgun.player-speed"), 0, 3) - 1;
+		SHOTGUN_BULLET_MAXDIST = clamp((float) kitSettingsSection.getDouble("shotgun.bullet-maxdist"), 0f, 1000f);
 
-		MACHINE_GUN_BULLET_DMG = clamp((float) kitSettingsSection.getDouble("machine-gun.bullet-dmg"), 0f, 100f);
 		MACHINE_GUN_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("machine-gun.bullet-speed"), 0f, 5f);
+		MACHINE_GUN_BULLET_DMG = clamp((float) kitSettingsSection.getDouble("machine-gun.bullet-dmg"), 0f, 100f);
 		MACHINE_GUN_MAX_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("machine-gun.max-bullet-spread"), 0f, 1f);
 		MACHINE_GUN_PLAYER_SPEED = clamp(kitSettingsSection.getInt("machine-gun.player-speed"), 0, 3) - 1;
+		MACHINE_GUN_BULLET_MAXDIST = clamp((float) kitSettingsSection.getDouble("machine-gun.bullet-maxdist"), 0f, 1000f);
+
+		SUB_MACHINE_GUN_PLAYER_SPEED = clamp(kitSettingsSection.getInt("sub-machine-gun.player-speed"), 0, 3) - 1;
+		SUB_MACHINE_GUN_BULLET_DMG = clamp((float) kitSettingsSection.getDouble("sub-machine-gun.bullet-dmg"), 0f, 100f);;
+		SUB_MACHINE_GUN_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("sub-machine-gun.bullet-speed"), 0f, 5f);;
+		SUB_MACHINE_GUN_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("sub-machine-gun.bullet-spread"), 0f, 1f);;
+		SUB_MACHINE_GUN_BULLET_MAXDIST = clamp((float) kitSettingsSection.getDouble("sub-machine-gun.bullet-maxdist"), 0f, 1000f);;
 	}
 
 	public static <T extends Comparable<T>> T clamp(T val, T min, T max) {

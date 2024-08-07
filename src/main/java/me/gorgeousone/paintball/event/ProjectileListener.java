@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -24,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -37,7 +39,40 @@ public class ProjectileListener implements Listener {
 		this.plugin = plugin;
 		this.lobbyHandler = lobbyHandler;
 	}
-	
+
+	@EventHandler
+	public void onProjectileLaunch(ProjectileLaunchEvent event) {
+		Projectile projectile = event.getEntity();
+		Location launchLoc = event.getLocation();
+		if (!(projectile.getShooter() instanceof Player)) {
+			return;
+		}
+
+		new BukkitRunnable() {
+			float bulletMaxDist = -1;
+			@Override
+			public void run() {
+				if (projectile.isDead() || !projectile.isValid()) {
+					cancel();
+					return ;
+				}
+
+				if (bulletMaxDist == -1f) {
+					bulletMaxDist = getBulletMaxDist(projectile);
+				}
+
+				Location loc = projectile.getLocation();
+				double dist = loc.distance(launchLoc);
+
+				if (dist > bulletMaxDist && bulletMaxDist != -1f) {
+					System.out.println(dist+" > "+bulletMaxDist);
+					projectile.remove();
+					cancel();
+				}
+			}
+		}.runTaskTimer(plugin, 2, 1);
+	}
+
 	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent event) {
 		Projectile projectile = event.getEntity();
@@ -49,12 +84,11 @@ public class ProjectileListener implements Listener {
 		UUID playerId = shooter.getUniqueId();
 		PbGame game = lobbyHandler.getGame(playerId);
 		float bulletDmg = getBulletDmg(projectile);
-		
+
 		if (game == null || bulletDmg == 0) {
 			return;
 		}
 		if (event.getHitBlock() != null) {
-
 			game.getTeam(playerId).paintBlock(event.getHitBlock(),getBulletBlockCount(projectile));
 			game.updateTeamCredit();
 			return;
@@ -106,9 +140,9 @@ public class ProjectileListener implements Listener {
 		}
 	}
 
-	int getBulletBlockCount(Projectile bullet)
-	{
+	int getBulletBlockCount(Projectile bullet) {
 		PersistentDataContainer dataContainer = bullet.getPersistentDataContainer();
+
 		if (dataContainer.has(PaintballPlugin.BULLET_TAG, PersistentDataType.INTEGER)) {
 			Integer bulletCount = dataContainer.get(PaintballPlugin.BULLET_TAG, PersistentDataType.INTEGER);
 			return bulletCount != null ? bulletCount : 0;
@@ -116,6 +150,16 @@ public class ProjectileListener implements Listener {
 		return 0;
 	}
 
+	float getBulletMaxDist(Projectile bullet) {
+		System.out.println("getBulletMaxDist is called");
+		PersistentDataContainer dataContainer = bullet.getPersistentDataContainer();
+
+		if (dataContainer.has(PaintballPlugin.BULLET_MAXDIST, PersistentDataType.FLOAT)) {
+			Float bulletMaxDist = dataContainer.get(PaintballPlugin.BULLET_MAXDIST, PersistentDataType.FLOAT);
+			return bulletMaxDist != null ? bulletMaxDist : 1;
+		}
+		return 5;
+	}
 
 	@EventHandler()
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
