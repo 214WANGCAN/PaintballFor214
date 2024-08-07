@@ -18,7 +18,8 @@ public enum KitType {
 	RIFLE(69420),
 	SHOTGUN(69421),
 	MACHINE_GUN(69422),
-	SUBMACHINE_GUN(69423);
+	SUBMACHINE_GUN(69423),
+	PAINTBUKKET(69424);;
 	//	SNIPER;
 	
 	public String gunName;
@@ -64,6 +65,7 @@ public enum KitType {
 		SHOTGUN.setDescription(Message.NAME_SHOTGUN, Message.LORE_SHOTGUN);
 		MACHINE_GUN.setDescription(Message.NAME_MACHINE_GUN, Message.LORE_MACHINE_GUN);
 		SUBMACHINE_GUN.setDescription("彩弹冲锋枪", "高射速低稳定性 但上色率低 自带速度2");
+		PAINTBUKKET.setDescription("油漆桶", "低射速低稳定性 但能射出一大坨颜料!");
 //		SNIPER_RILE.setDescription(ChatColor.YELLOW + "Paintball Sniper", "Long range sniper rifle.", "Higher damage the longer scoped (sneak).")
 	}
 	
@@ -72,7 +74,7 @@ public enum KitType {
 		SHOTGUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("GOLD_BARDING") : Material.valueOf("GOLDEN_HORSE_ARMOR"));
 		MACHINE_GUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("DIAMOND_BARDING") : Material.valueOf("DIAMOND_HORSE_ARMOR"));
 		SUBMACHINE_GUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("DIAMOND_BARDING") : Material.valueOf("LEATHER_HORSE_ARMOR"));
-
+		PAINTBUKKET.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("WATER_BUCKET") : Material.valueOf("POWDER_SNOW_BUCKET"));
 		//		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
 	}
 	

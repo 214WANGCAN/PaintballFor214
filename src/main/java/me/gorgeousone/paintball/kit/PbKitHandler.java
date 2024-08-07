@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public class PbKitHandler {
 	
-	private static final int KITS_START_SLOT = 12;
+	private static final int KITS_START_SLOT = 11;
 	private static Map<KitType, AbstractKit> KITS;
 	private static ItemStack WATER_BOMBS;
 	
@@ -39,6 +39,7 @@ public class PbKitHandler {
 		KITS.put(KitType.SHOTGUN, new ShotgunKit(plugin));
 		KITS.put(KitType.MACHINE_GUN, new MachineGunKit(plugin));
 		KITS.put(KitType.SUBMACHINE_GUN, new SubMachineGunKit(plugin));
+		KITS.put(KitType.PAINTBUKKET, new PaintBucketKit(plugin));
 		//		KITS.put(KitType.SNIPER, new SniperKit());
 	}
 	

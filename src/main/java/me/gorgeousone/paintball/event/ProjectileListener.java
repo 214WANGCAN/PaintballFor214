@@ -151,7 +151,6 @@ public class ProjectileListener implements Listener {
 	}
 
 	float getBulletMaxDist(Projectile bullet) {
-		System.out.println("getBulletMaxDist is called");
 		PersistentDataContainer dataContainer = bullet.getPersistentDataContainer();
 
 		if (dataContainer.has(PaintballPlugin.BULLET_MAXDIST, PersistentDataType.FLOAT)) {
