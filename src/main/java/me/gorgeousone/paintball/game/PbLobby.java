@@ -25,10 +25,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +49,7 @@ public class PbLobby {
 	private final PbCountdown countdown;
 	private Equipment equipment;
 	private GameBoard board;
-
+	private List<Player> waitingForJoinList;
 	public PbLobby(
 			String name,
 			Location joinSpawn,
@@ -74,6 +71,7 @@ public class PbLobby {
 
 		this.equipment = new LobbyEquipment(teamQueue::onQueueForTeam, this::onMapVote, this::onSelectKit, this::onQuit, kitHandler);
 		this.countdown = new PbCountdown(this::onCountdownTick, this::onCountdownEnd, plugin);
+		waitingForJoinList = new ArrayList<>();
 		createGameBoard();
 	}
 
@@ -141,6 +139,7 @@ public class PbLobby {
 		}
 		//TODO join as spectator?
 		if (game.isRunning()) {
+			waitingForJoinList.add(player);
 			throw new IllegalStateException(Message.LOBBY_RUNNING.format());
 		}
 		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
@@ -278,6 +277,11 @@ public class PbLobby {
 			equipment.equip(p);
 			board.addPlayer(p);
 		});
+		for (Player player : waitingForJoinList) {
+			joinPlayer(player);
+		}
+		waitingForJoinList.clear();
+
 		if (game.size() >= ConfigSettings.MIN_PLAYERS) {
 			countdown.start(ConfigSettings.COUNTDOWN_SECS);
 		}
