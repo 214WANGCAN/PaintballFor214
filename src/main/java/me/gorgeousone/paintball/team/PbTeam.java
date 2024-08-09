@@ -1,6 +1,7 @@
 package me.gorgeousone.paintball.team;
 
 import me.gorgeousone.paintball.Message;
+import me.gorgeousone.paintball.game.GameState;
 import me.gorgeousone.paintball.game.PbGame;
 import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.kit.PbKitHandler;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +51,8 @@ public class PbTeam {
 	private final Map<UUID, List<Integer>> uncoloredArmorSlots;
 	//key: armorstand, value: player
 	private final Map<UUID, UUID> reviveSkellies;
+	private final Map<UUID, BukkitRunnable> autoReviveMap;
+	private Location reviveSpawn;
 	private final Random rng = new Random();
 
 	// Paint count
@@ -64,6 +68,7 @@ public class PbTeam {
 		this.playerHealth = new HashMap<>();
 		this.uncoloredArmorSlots = new HashMap<>();
 		this.reviveSkellies = new HashMap<>();
+		this.autoReviveMap = new HashMap<>();
 		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor, ChatColor.WHITE + Message.UI_TEAM + " " + teamType.displayName);
 
 		this.paintNum = 0;
@@ -81,6 +86,7 @@ public class PbTeam {
 			equipPlayer(player);
 			++i;
 		}
+		reviveSpawn = spawns.get(0);
 	}
 	
 	public TeamType getType() {
@@ -126,12 +132,16 @@ public class PbTeam {
 		playerHealth.remove(playerId);
 		uncoloredArmorSlots.remove(playerId);
 		UUID skellyId = getReviveSkellyId(playerId);
-		
+
+		if(autoReviveMap.containsKey(skellyId))
+			autoReviveMap.get(skellyId).cancel();
+		autoReviveMap.remove(skellyId);
+
 		if (skellyId != null) {
 			Bukkit.getEntity(skellyId).remove();
 			reviveSkellies.remove(skellyId);
 		}
-		if (alivePlayers.isEmpty()) {
+		if (players.isEmpty()) {
 			game.onTeamKill(this);
 		}
 	}
@@ -151,6 +161,10 @@ public class PbTeam {
 		uncoloredArmorSlots.clear();
 		reviveSkellies.keySet().forEach(id -> Bukkit.getEntity(id).remove());
 		reviveSkellies.clear();
+		for (BukkitRunnable ar : autoReviveMap.values()) {
+			ar.cancel();
+		}
+		autoReviveMap.clear();
 		paintNum = 0;
 	}
 
@@ -197,12 +211,47 @@ public class PbTeam {
 		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, kitHandler.getKitType(playerId));
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
 		game.updateAliveScores();
-		
+
+		// auto revive after 5 sec
+		autoRevive(skelly);
 		if (alivePlayers.isEmpty()) {
-			game.onTeamKill(this);
+			//game.onTeamKill(this);
 		}
 	}
-	
+
+	private void autoRevive(ArmorStand skelly){
+		UUID skellyId = skelly.getUniqueId();
+
+		if (!reviveSkellies.containsKey(skelly.getUniqueId())) {
+			return;
+		}
+		UUID playerId = reviveSkellies.get(skellyId);
+		Player player = Bukkit.getPlayer(playerId);
+		BukkitRunnable ar = new BukkitRunnable() {
+			int countDown = 10;
+			@Override
+			public void run() {
+				if(countDown <= 0)
+				{
+					revivePlayerToSpawn(skelly);
+                    autoReviveMap.remove(skellyId);
+					cancel();
+				}
+
+                assert player != null;
+                player.sendTitle("§c等待复活","§e请等待 "+countDown);
+				countDown -= 1;
+
+				if(game.getState() != GameState.RUNNING){
+					autoReviveMap.remove(skellyId);
+					cancel();
+				}
+			}
+		};
+		ar.runTaskTimer(plugin, 0, 20);
+		autoReviveMap.put(skellyId,ar);
+	}
+
 	private void paintArmor(UUID playerId) {
 		Player player = Bukkit.getPlayer(playerId);
 		PlayerInventory inv = player.getInventory();
@@ -252,6 +301,11 @@ public class PbTeam {
 		if (!reviveSkellies.containsKey(skelly.getUniqueId())) {
 			return;
 		}
+
+		if(autoReviveMap.containsKey(skellyId))
+			autoReviveMap.get(skellyId).cancel();
+		autoReviveMap.remove(skellyId);
+
 		UUID playerId = reviveSkellies.get(skellyId);
 		Player player = Bukkit.getPlayer(playerId);
 		
@@ -264,7 +318,29 @@ public class PbTeam {
 		alivePlayers.add(playerId);
 		game.updateAliveScores();
 	}
-	
+
+	public void revivePlayerToSpawn(ArmorStand skelly) {
+		if (game.getState() != GameState.RUNNING) {
+			return;
+		}
+		UUID skellyId = skelly.getUniqueId();
+
+		if (!reviveSkellies.containsKey(skelly.getUniqueId())) {
+			return;
+		}
+		UUID playerId = reviveSkellies.get(skellyId);
+		Player player = Bukkit.getPlayer(playerId);
+
+		setSpectator(player, false);
+		LocationUtil.tpMarked(player, reviveSpawn);
+		skelly.remove();
+
+		reviveSkellies.remove(skellyId);
+		playerHealth.put(playerId, maxHealthPoints);
+		alivePlayers.add(playerId);
+		game.updateAliveScores();
+	}
+
 	public void healPlayer(Player player) {
 		player.setFoodLevel(20);
 		player.setMaxHealth(2 * maxHealthPoints);

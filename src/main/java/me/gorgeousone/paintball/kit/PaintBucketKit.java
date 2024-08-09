@@ -17,6 +17,6 @@ public class PaintBucketKit extends AbstractKit {
 
 	@Override
 	public void prepPlayer(Player player) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 1, false, false, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 0, false, false, false));
 	}
 }

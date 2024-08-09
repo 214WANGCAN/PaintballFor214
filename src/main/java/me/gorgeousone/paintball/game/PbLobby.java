@@ -183,6 +183,7 @@ public class PbLobby {
 		}
 		teamQueue.removePlayer(playerId);
 		game.removePlayer(playerId);
+		waitingForJoinList.remove(player);
 		ItemUtil.loadPlayerBackup(player, plugin, doTeleport, isImmediate);
 		Message.PLAYER_LEAVE.send(player, name);
 

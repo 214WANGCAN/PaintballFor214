@@ -352,8 +352,8 @@ public class PbGame {
 					showPlayer(p);
 					gameBoard.removePlayer(p);
 					playedArena.resetSchem();
-					onGameEnd.run();
 				});
+				onGameEnd.run();
 				gameBoard = null;
 			}
 		};
@@ -458,7 +458,6 @@ public class PbGame {
 			int t2Count = 0;
 			@Override
 			public void run() {
-				// 在此处编写你的动画逻辑
 				if(t1Count < t1)
 					t1Count++;
 				if(t2Count < t2)
