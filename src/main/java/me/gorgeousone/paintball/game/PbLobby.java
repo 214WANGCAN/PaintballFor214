@@ -139,7 +139,8 @@ public class PbLobby {
 		}
 		//TODO join as spectator?
 		if (game.isRunning()) {
-			waitingForJoinList.add(player);
+			if(!waitingForJoinList.contains(player))
+				waitingForJoinList.add(player);
 			throw new IllegalStateException(Message.LOBBY_RUNNING.format());
 		}
 		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
