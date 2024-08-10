@@ -26,7 +26,13 @@ public class MovementListener implements Listener {
 		PbGame game = lobbyHandler.getGame(player.getUniqueId());
 
 
+
 		if (game == null || !(game.getState() == GameState.COUNTING_DOWN || game.getState() == GameState.OVER)) {
+			if(game != null && game.getState() == GameState.RUNNING)
+			{
+				game.getTeam(player.getUniqueId()).onMove(player);
+			}
+
 			return;
 		}
 

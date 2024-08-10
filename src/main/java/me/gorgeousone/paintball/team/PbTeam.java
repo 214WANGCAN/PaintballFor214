@@ -227,6 +227,7 @@ public class PbTeam {
 		}
 		UUID playerId = reviveSkellies.get(skellyId);
 		Player player = Bukkit.getPlayer(playerId);
+		PbTeam t = this;
 		BukkitRunnable ar = new BukkitRunnable() {
 			int countDown = 10;
 			@Override
@@ -241,7 +242,7 @@ public class PbTeam {
                 assert player != null;
                 player.sendTitle("§c等待复活","§e请等待 "+countDown);
 				countDown -= 1;
-
+				TeamUtil.paintBlot(game,t, reviveSpawn.getBlock(), teamType, 20, 3);
 				if(game.getState() != GameState.RUNNING){
 					autoReviveMap.remove(skellyId);
 					cancel();
@@ -334,6 +335,9 @@ public class PbTeam {
 		setSpectator(player, false);
 		LocationUtil.tpMarked(player, reviveSpawn);
 		skelly.remove();
+		// 无限水瓶
+		PlayerInventory inv = player.getInventory();
+		inv.setItem(1, PbKitHandler.getWaterBombs());
 
 		reviveSkellies.remove(skellyId);
 		playerHealth.put(playerId, maxHealthPoints);
@@ -370,5 +374,9 @@ public class PbTeam {
 
 	public void setPaintNum(int paintNum) {
 		this.paintNum = paintNum;
+	}
+
+	public void onMove(Player player) {
+		TeamUtil.giveBlindnessToPlayer(this,game,player);
 	}
 }

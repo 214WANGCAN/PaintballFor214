@@ -280,7 +280,8 @@ public class PbLobby {
 			board.addPlayer(p);
 		});
 		for (Player player : waitingForJoinList) {
-			joinPlayer(player);
+			if(player.isOnline())
+				joinPlayer(player);
 		}
 		waitingForJoinList.clear();
 

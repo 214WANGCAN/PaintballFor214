@@ -47,6 +47,9 @@ public class ProjectileListener implements Listener {
 		if (!(projectile.getShooter() instanceof Player)) {
 			return;
 		}
+		if (projectile instanceof ThrownPotion) {
+			return;
+		}
 
 		new BukkitRunnable() {
 			float bulletMaxDist = -1;

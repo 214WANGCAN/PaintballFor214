@@ -145,8 +145,16 @@ public class TeamUtil {
 		}
 
 		team.setPaintNum(team.getPaintNum()+1);
+	}
 
-
-
+	public static void giveBlindnessToPlayer(PbTeam team, PbGame game,Player player)
+	{
+		Material material = player.getLocation().subtract(0, 1, 0).getBlock().getType();
+		PbTeam differTeam = game.getDifferentTeam(team);
+		if(material == differTeam.getType().blockColor.getType())
+		{
+			PotionEffect blindness = new PotionEffect(PotionEffectType.SLOW, 2, 3,false,false);
+			player.addPotionEffect(blindness);
+		}
 	}
 }
