@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.kit;
 
+import me.gorgeousone.paintball.ConfigSettings;
 import me.gorgeousone.paintball.PaintballPlugin;
 import me.gorgeousone.paintball.team.PbTeam;
 import org.bukkit.Location;
@@ -11,6 +12,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
@@ -30,6 +33,7 @@ public abstract class AbstractKit {
 	protected float bulletSpread;
 	protected int bulletBlockCount;
 	protected float bulletMaxDist;
+	protected int bulletPathColor;
 	protected final long fireRate;
 	protected final Sound gunshotSound;
 	protected final float gunshotPitchHigh;
@@ -44,6 +48,7 @@ public abstract class AbstractKit {
 						  float bulletSpread,
 						  int bulletBlockCount,
 						  float bulletMaxDist,
+						  int bulletPathColor,
 						  long fireRate,
 						  Sound gunshotSound,
 						  float gunshotPitchHigh, float gunshotPitchLow)
@@ -55,6 +60,7 @@ public abstract class AbstractKit {
 		this.bulletSpread = bulletSpread;
 		this.bulletBlockCount = bulletBlockCount;
 		this.bulletMaxDist = bulletMaxDist;
+		this.bulletPathColor = bulletPathColor;
 		this.fireRate = fireRate;
 		this.gunshotSound = gunshotSound;
 		this.gunshotPitchHigh = gunshotPitchHigh;
@@ -87,6 +93,7 @@ public abstract class AbstractKit {
 			PersistentDataContainer dataContainer = bullet.getPersistentDataContainer();
 			dataContainer.set(PaintballPlugin.BULLET_TAG, PersistentDataType.INTEGER, bulletBlockCount);
 			dataContainer.set(PaintballPlugin.BULLET_MAXDIST, PersistentDataType.FLOAT, bulletMaxDist);
+			dataContainer.set(PaintballPlugin.BULLET_PATHCOLOR, PersistentDataType.INTEGER, bulletPathColor);
 		}
 		playGunshotSound(player, gamePlayers, gunshotPitchLow, gunshotPitchHigh);
 		
@@ -99,7 +106,11 @@ public abstract class AbstractKit {
 	/**
 	 * Adds kit specific status effects to the player.
 	 */
-	public void prepPlayer(Player player) {}
+	public void prepPlayer(Player player)
+	{
+		// 发光
+		player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 99999, 0, false, false, false));
+	}
 	
 	//TODO make own gunshots sound high pitched
 	//TODO lower pitch? seems loud

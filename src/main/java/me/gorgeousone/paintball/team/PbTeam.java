@@ -154,6 +154,7 @@ public class PbTeam {
 			player.getInventory().setArmorContents(null);
 			//TODO find way to let Kits reset their effects
 			player.removePotionEffect(PotionEffectType.SPEED);
+			player.removePotionEffect(PotionEffectType.GLOWING);
 		}
 		players.clear();
 		playerHealth.clear();
@@ -168,8 +169,8 @@ public class PbTeam {
 		paintNum = 0;
 	}
 
-	public void paintBlock(Block shotBlock, int blockCount) {
-		TeamUtil.paintBlot(game,this,shotBlock, teamType, blockCount, 1);
+	public void paintBlock(Block shotBlock, int blockCount, boolean showParticle) {
+		TeamUtil.paintBlot(game,this,shotBlock, teamType, blockCount, 1,showParticle);
 	}
 	
 	public void damagePlayer(Player target, Player shooter, float bulletDmg) {
@@ -214,8 +215,17 @@ public class PbTeam {
 
 		// auto revive after 5 sec
 		autoRevive(skelly);
+
+		// 死亡爆炸
+		PbTeam killerTeam = game.getDifferentTeam(this);
+		TeamUtil.paintBlot(game, killerTeam, player.getLocation().getBlock(), killerTeam.getType(), 40, 3, true);
+
+
 		if (alivePlayers.isEmpty()) {
-			//game.onTeamKill(this);
+			game.allPlayers(p -> {
+				p.playSound(p.getLocation(), Sound.ENTITY_BLAZE_DEATH, .5f, 2f);
+				p.sendTitle("",this.getType().prefixColor+this.getType().displayName+"§c已被团灭!");
+			});
 		}
 	}
 
@@ -242,7 +252,7 @@ public class PbTeam {
                 assert player != null;
                 player.sendTitle("§c等待复活","§e请等待 "+countDown);
 				countDown -= 1;
-				TeamUtil.paintBlot(game,t, reviveSpawn.getBlock(), teamType, 20, 3);
+				TeamUtil.paintBlot(game,t, reviveSpawn.getBlock(), teamType, 20, 3, true);
 				if(game.getState() != GameState.RUNNING){
 					autoReviveMap.remove(skellyId);
 					cancel();

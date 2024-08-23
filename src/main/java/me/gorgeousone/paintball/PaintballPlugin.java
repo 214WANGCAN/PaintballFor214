@@ -62,6 +62,7 @@ public final class PaintballPlugin extends JavaPlugin {
 	private CommandTrigger commandTrigger;
 	public static NamespacedKey BULLET_TAG;
 	public static NamespacedKey BULLET_MAXDIST;
+	public static NamespacedKey BULLET_PATHCOLOR;
 	@Override
 	public void onEnable() {
 		setupVersion();
@@ -84,6 +85,7 @@ public final class PaintballPlugin extends JavaPlugin {
 
 		BULLET_TAG = new NamespacedKey(this, "bullet_tag");
 		BULLET_MAXDIST = new NamespacedKey(this, "bullet_max_dist");
+		BULLET_PATHCOLOR = new NamespacedKey(this, "bullet_path_color");
 	}
 	
 	@Override
@@ -209,7 +211,7 @@ public final class PaintballPlugin extends JavaPlugin {
 
 	private void hookPapi() {
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-			new GameStatsExpansion(this).register();
+			new GameStatsExpansion(this,lobbyHandler).register();
 			getLogger().info("PlaceholderAPI detected and placeholders registered.");
 		} else {
 			getLogger().warning("PlaceholderAPI not found. Placeholders will not be available.");

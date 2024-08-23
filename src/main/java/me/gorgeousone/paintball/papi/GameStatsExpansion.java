@@ -1,8 +1,12 @@
 package me.gorgeousone.paintball.papi;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.gorgeousone.paintball.game.PbGame;
+import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.kit.KitType;
+import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.util.ConfigUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -10,13 +14,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.UUID;
 
 public class GameStatsExpansion extends PlaceholderExpansion {
 
 	private final JavaPlugin plugin;
-
-	public GameStatsExpansion(JavaPlugin plugin) {
+	private PbLobbyHandler lobbyHandler;
+	public GameStatsExpansion(JavaPlugin plugin, PbLobbyHandler lobbyHandler) {
 		this.plugin = plugin;
+		this.lobbyHandler = lobbyHandler;
 	}
 
 	@Override
@@ -36,11 +42,25 @@ public class GameStatsExpansion extends PlaceholderExpansion {
 
 	@Override
 	public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
+		if(params.equals("team-prefix"))
+		{
+			UUID playerId = player.getUniqueId();
+			PbGame game = lobbyHandler.getGame(playerId);
+			if(game == null)
+				return ChatColor.WHITE+"";
+			PbTeam team = game.getTeam(playerId);
+			if(team == null)
+				return ChatColor.WHITE+"";
+			ChatColor prefixColor = team.getType().prefixColor;
+			return prefixColor+"";
+		}
+
 		File backupFile = ConfigUtil.matchFirstFile(player.getUniqueId().toString(), "player_stats", plugin);
 
 		if (backupFile == null) {
 			return "0";
 		}
+
 		YamlConfiguration stats = YamlConfiguration.loadConfiguration(backupFile);
 		return String.valueOf(getStat(stats, params));
 	}

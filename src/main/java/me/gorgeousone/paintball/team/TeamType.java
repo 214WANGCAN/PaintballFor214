@@ -52,13 +52,13 @@ public enum TeamType {
 	 * call setup after BlockType is setup for server version (legacy)
 	 */
 	public static void updateItems() {
-		EMBER.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:14");
-		ICE.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:3");
-		
-		EMBER.joinItem = createWool("RED_WOOL", (short) 14);
-		ICE.joinItem = createWool("LIGHT_BLUE_WOOL", (short) 3);
+		EMBER.blockColor = BlockType.get("minecraft:red_concrete", "stained_clay:14");
+		ICE.blockColor = BlockType.get("minecraft:light_blue_concrete", "stained_clay:3");
+
+		EMBER.joinItem = createWool("RED_CONCRETE", (short) 14);
+		ICE.joinItem = createWool("LIGHT_BLUE_CONCRETE", (short) 3);
 	}
-	
+
 	private static ItemStack createWool(String newName, short magicVal) {
 		return VersionUtil.IS_LEGACY_SERVER ?
 				new ItemStack(Material.valueOf("WOOL"), 1, magicVal) :

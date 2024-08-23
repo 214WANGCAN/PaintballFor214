@@ -386,6 +386,17 @@ public class PbGame {
 			i += 4;
 		}
 	}
+
+	public void hideTeamCredit()
+	{
+		int i = 2;
+		for (TeamType teamType : teams.keySet()) {
+			PbTeam team = teams.get(teamType);
+			int teamPercent = (int) (team.getPaintNum() / (double) totalTeamCredit() * 100);
+			gameBoard.setLine(i, "§6已上色: "+ team.getType().prefixColor + "?%" + StringUtil.pad(i));
+			i += 4;
+		}
+	}
 	public void hidePlayer(Player player) {
 		allPlayers(p -> p.hidePlayer(player));
 	}
@@ -451,7 +462,7 @@ public class PbGame {
 	public void countingBlock() {
 		int t1 = (int) (teams.get(TeamType.ICE).getPaintNum() / (double) totalTeamCredit() * 100);
 		int t2 = (int) (teams.get(TeamType.EMBER).getPaintNum() / (double) totalTeamCredit() * 100);
-
+		hideTeamCredit();
 		new BukkitRunnable() {
 
 			int t1Count = 0;
@@ -482,6 +493,7 @@ public class PbGame {
 		}.runTaskTimer(plugin, 0, 1);
 	}
 
+	// 到达世界最高层
 	public void haveALook() {
 		state = GameState.OVER;
 		Location loc = playedArena.getMidSpawnLocation();

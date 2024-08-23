@@ -7,7 +7,10 @@ import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.kit.PbKitHandler;
 import me.gorgeousone.paintball.util.LocationUtil;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -44,6 +47,11 @@ public class ProjectileListener implements Listener {
 	public void onProjectileLaunch(ProjectileLaunchEvent event) {
 		Projectile projectile = event.getEntity();
 		Location launchLoc = event.getLocation();
+
+		Player shooter = (Player) projectile.getShooter();
+		UUID playerId = shooter.getUniqueId();
+		PbGame game = lobbyHandler.getGame(playerId);
+
 		if (!(projectile.getShooter() instanceof Player)) {
 			return;
 		}
@@ -66,6 +74,13 @@ public class ProjectileListener implements Listener {
 
 				Location loc = projectile.getLocation();
 				double dist = loc.distance(launchLoc);
+
+				// 路径涂色
+				Block pathBlock = findFirstSolidBlockBelow(loc);
+				if(pathBlock!=null)
+				{
+					game.getTeam(playerId).paintBlock(pathBlock,getPathColor(projectile),false);
+				}
 
 				if (dist > bulletMaxDist && bulletMaxDist != -1f) {
 					//System.out.println(dist+" > "+bulletMaxDist);
@@ -92,7 +107,7 @@ public class ProjectileListener implements Listener {
 			return;
 		}
 		if (event.getHitBlock() != null) {
-			game.getTeam(playerId).paintBlock(event.getHitBlock(),getBulletBlockCount(projectile));
+			game.getTeam(playerId).paintBlock(event.getHitBlock(),getBulletBlockCount(projectile),true);
 			game.updateTeamCredit();
 			return;
 		}
@@ -163,6 +178,16 @@ public class ProjectileListener implements Listener {
 		return 5;
 	}
 
+	int getPathColor(Projectile bullet) {
+		PersistentDataContainer dataContainer = bullet.getPersistentDataContainer();
+
+		if (dataContainer.has(PaintballPlugin.BULLET_PATHCOLOR, PersistentDataType.INTEGER)) {
+			Integer bulletCount = dataContainer.get(PaintballPlugin.BULLET_TAG, PersistentDataType.INTEGER);
+			return bulletCount != null ? bulletCount : 0;
+		}
+		return 2;
+	}
+
 	@EventHandler()
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		Player player = event.getPlayer();
@@ -204,5 +229,23 @@ public class ProjectileListener implements Listener {
 		Collection<Entity> entities = pos.getWorld().getNearbyEntities(pos, 4, 2, 4);
 		entities.remove(potion);
 		return entities;
+	}
+
+	public Block findFirstSolidBlockBelow(Location location) {
+		World world = location.getWorld();
+		int x = location.getBlockX();
+		int y = location.getBlockY();
+		int z = location.getBlockZ();
+
+		// 从给定的坐标开始，向下寻找第一个不是空气的方块
+		for (int currentY = y; currentY >= world.getMinHeight(); currentY--) {
+			Block block = world.getBlockAt(x, currentY, z);
+			if (block.getType() != Material.AIR) {
+				return block;
+			}
+		}
+
+		// 如果没有找到，返回null
+		return null;
 	}
 }

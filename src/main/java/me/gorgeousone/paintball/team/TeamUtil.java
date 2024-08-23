@@ -75,10 +75,10 @@ public class TeamUtil {
 	}
 	
 	//TODO make this nicer block patterns :(
-	public static void paintBlot(PbGame game, PbTeam team, Block block, TeamType teamType, int blockCount, int range) {
+	public static void paintBlot(PbGame game, PbTeam team, Block block, TeamType teamType, int blockCount, int range, boolean showParticle) {
 		if (isTerracotta(block)) {
 			countCredit(block,team,game);
-			paintBlock(block, teamType);
+			paintBlock(block, teamType, showParticle);
 
 		}
 		List<Block> neighbors = getNeighbors(block, range);
@@ -90,15 +90,17 @@ public class TeamUtil {
 			int rndIdx = rng.nextInt(neighbors.size());
 			Block neighbor = neighbors.get(rndIdx);
 			countCredit(neighbor,team,game);
-			paintBlock(neighbor, teamType);
+			paintBlock(neighbor, teamType, showParticle);
 			neighbors.remove(rndIdx);
 		}
 	}
 	
-	private static void paintBlock(Block block, TeamType teamType) {
+	private static void paintBlock(Block block, TeamType teamType, boolean showParticle) {
 		World world = block.getWorld();
 		teamType.blockColor.updateBlock(block, false);
 		world.playSound(block.getLocation(), Sound.BLOCK_STONE_PLACE, .1f, .8f);
+		if(!showParticle)
+			return;
 		Location particleLoc = block.getLocation().add(.5, .5, .5);
 		int particleCount = 10;
 		
@@ -126,10 +128,11 @@ public class TeamUtil {
 		terracotta.remove(block);
 		return terracotta;
 	}
-	
+
 	private static boolean isTerracotta(Block block) {
 		String matName = block.getType().name();
-		return matName.contains("STAINED_CLAY") || matName.contains("TERRACOTTA");
+		//System.out.println(matName.contains("CONCRETE"));
+		return matName.contains("STAINED_CLAY") || matName.contains("TERRACOTTA") || matName.contains("CONCRETE");
 	}
 
 	public static void countCredit(Block block,PbTeam team, PbGame game) {
@@ -153,7 +156,7 @@ public class TeamUtil {
 		PbTeam differTeam = game.getDifferentTeam(team);
 		if(material == differTeam.getType().blockColor.getType())
 		{
-			PotionEffect blindness = new PotionEffect(PotionEffectType.SLOW, 2, 3,false,false);
+			PotionEffect blindness = new PotionEffect(PotionEffectType.SLOW, 2, 1,false,false);
 			player.addPotionEffect(blindness);
 		}
 	}

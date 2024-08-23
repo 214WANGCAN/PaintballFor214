@@ -12,11 +12,12 @@ import org.bukkit.potion.PotionEffectType;
 public class RifleKit extends AbstractKit {
 	
 	public RifleKit() {
-		super(KitType.RIFLE, 3, 1, 1.75f, 0.02f,8, 100, 10, Sound.ENTITY_CHICKEN_EGG, 1.35f, 1.15f);
+		super(KitType.RIFLE, 3, 1, 1.75f, 0.02f,8, 50, 5,10, Sound.ENTITY_CHICKEN_EGG, 1.35f, 1.15f);
 	}
 	
 	@Override
 	public void prepPlayer(Player player) {
+		super.prepPlayer(player);
 		if (ConfigSettings.RIFLE_PLAYER_SPEED > -1) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, ConfigSettings.RIFLE_PLAYER_SPEED, false, false, false));
 		}

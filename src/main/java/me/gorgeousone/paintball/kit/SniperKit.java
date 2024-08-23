@@ -12,7 +12,7 @@ import java.util.Collection;
 public class SniperKit extends AbstractKit {
 	
 	public SniperKit() {
-		super(KitType.RIFLE, 4, 1, 0, 0, 5, 500, 60, Sound.ENTITY_ARROW_HIT, 1, .5f);
+		super(KitType.RIFLE, 4, 1, 0, 0, 5, 500, 10,60, Sound.ENTITY_ARROW_HIT, 1, .5f);
 	}
 	
 	@Override
