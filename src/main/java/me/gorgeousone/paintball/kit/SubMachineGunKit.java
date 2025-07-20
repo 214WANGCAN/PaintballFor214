@@ -21,9 +21,27 @@ import java.util.UUID;
  */
 public class SubMachineGunKit extends AbstractKit {
 	public SubMachineGunKit(JavaPlugin plugin) {
-		super(KitType.SUBMACHINE_GUN, (float)0.1, 2, 1f, .3f,3, 25,1,3,Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
+		super(KitType.SUBMACHINE_GUN, (float)0.9, 1, 1.7f, .3f,6, 12,2,10,Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
 	}
+	@Override
+	public boolean launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
+		boolean didShoot = super.launchShot(player, team, gamePlayers);
+		if(didShoot)
+		{
+			ShotOptions options = new ShotOptions();
+			options.ignoreCooldown = true;
+			// 延迟 2 tick 发射第 2 发
+			Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> {
+				super.launchShot(player, team, gamePlayers, options);
+			}, 3L);
 
+			// 延迟 4 tick 发射第 3 发
+			Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> {
+				super.launchShot(player, team, gamePlayers, options);
+			}, 5L);
+		}
+		return didShoot;
+	}
 	@Override
 	public void prepPlayer(Player player) {
 		super.prepPlayer(player);

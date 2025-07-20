@@ -47,14 +47,7 @@ public class InventoryListener implements Listener {
 		}
 	}
 	
-	@EventHandler
-	public void onHandSwap(PlayerSwapHandItemsEvent event) {
-		Player player = event.getPlayer();
-		
-		if (lobbyHandler.isPlaying(player.getUniqueId())) {
-			event.setCancelled(true);
-		}
-	}
+
 	
 	@EventHandler
 	public void onInventoryEdit(InventoryClickEvent event) {

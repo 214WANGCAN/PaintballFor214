@@ -79,12 +79,13 @@ public class ProjectileListener implements Listener {
 				Block pathBlock = findFirstSolidBlockBelow(loc);
 				if(pathBlock!=null)
 				{
-					game.getTeam(playerId).paintBlock(pathBlock,getPathColor(projectile),false);
+					game.getTeam(playerId).paintBlock(playerId,pathBlock,getPathColor(projectile),false);
 				}
 
 				if (dist > bulletMaxDist && bulletMaxDist != -1f) {
 					//System.out.println(dist+" > "+bulletMaxDist);
 					projectile.remove();
+					game.updateTeamCredit();
 					cancel();
 				}
 			}
@@ -107,7 +108,7 @@ public class ProjectileListener implements Listener {
 			return;
 		}
 		if (event.getHitBlock() != null) {
-			game.getTeam(playerId).paintBlock(event.getHitBlock(),getBulletBlockCount(projectile),true);
+			game.getTeam(playerId).paintBlock(playerId,event.getHitBlock(),getBulletBlockCount(projectile),true);
 			game.updateTeamCredit();
 			return;
 		}
@@ -237,8 +238,8 @@ public class ProjectileListener implements Listener {
 		int y = location.getBlockY();
 		int z = location.getBlockZ();
 
-		// 从给定的坐标开始，向下寻找第一个不是空气的方块
-		for (int currentY = y; currentY >= world.getMinHeight(); currentY--) {
+		// 从给定的坐标开始，向下寻找第一个不是空气的方块world.getMinHeight()
+		for (int currentY = y; currentY >= y-5; currentY--) {
 			Block block = world.getBlockAt(x, currentY, z);
 			if (block.getType() != Material.AIR) {
 				return block;

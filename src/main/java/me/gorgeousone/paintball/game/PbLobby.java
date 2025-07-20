@@ -10,6 +10,7 @@ import me.gorgeousone.paintball.equipment.Equipment;
 import me.gorgeousone.paintball.equipment.LobbyEquipment;
 import me.gorgeousone.paintball.equipment.SlotClickEvent;
 import me.gorgeousone.paintball.kit.PbKitHandler;
+import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.ConfigUtil;
 import me.gorgeousone.paintball.util.ItemUtil;
 import me.gorgeousone.paintball.util.LocationUtil;
@@ -139,8 +140,13 @@ public class PbLobby {
 		}
 		//TODO join as spectator?
 		if (game.isRunning()) {
-			if(!waitingForJoinList.contains(player))
+			if(!waitingForJoinList.contains(player)){
 				waitingForJoinList.add(player);
+				player.teleport(game.getPlayedArena().getSpawns(TeamType.EMBER).get(0));
+				player.setGameMode(GameMode.SPECTATOR);
+			}
+
+
 			throw new IllegalStateException(Message.LOBBY_RUNNING.format());
 		}
 		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
@@ -282,6 +288,7 @@ public class PbLobby {
 		for (Player player : waitingForJoinList) {
 			if(player.isOnline())
 				joinPlayer(player);
+			player.setGameMode(GameMode.ADVENTURE);
 		}
 		waitingForJoinList.clear();
 

@@ -246,12 +246,24 @@ public class PbGame {
 		KitType kitType = kitHandler.getKitType(playerId);
 		List<Player> coplayers = players.stream().map(Bukkit::getPlayer).collect(Collectors.toList());
 		boolean didShoot = PbKitHandler.getKit(kitType).launchShot(player, getTeam(playerId), coplayers);
-		
 		if (didShoot) {
 			gameStats.addGunShot(playerId);
 		}
 	}
-	
+
+	public void addUltimateEnergy(UUID playerId, double amount)
+	{
+		KitType kitType = kitHandler.getKitType(playerId);
+		PbKitHandler.getKit(kitType).addUltimateEnergy(playerId,amount);
+	}
+
+	public void useUltimateEnergy(Player player)
+	{
+		KitType kitType = kitHandler.getKitType(player.getUniqueId());
+		List<Player> coplayers = players.stream().map(Bukkit::getPlayer).collect(Collectors.toList());
+		PbKitHandler.getKit(kitType).useUltimateSkill(player, getTeam(player.getUniqueId()), coplayers);
+	}
+
 	private void onThrowWaterBomb(SlotClickEvent event) {
 		UUID playerId = event.getPlayer().getUniqueId();
 		
@@ -286,10 +298,11 @@ public class PbGame {
 			return;
 		}
 		PbTeam team = getTeam(healer.getUniqueId());
-		
+
 		if (team.hasReviveSkelly(skelly)) {
 			team.revivePlayer(skelly);
 			gameStats.addRevive(healer.getUniqueId());
+			addUltimateEnergy(healer.getUniqueId(),10);
 		}
 	}
 	
@@ -352,6 +365,8 @@ public class PbGame {
 					showPlayer(p);
 					gameBoard.removePlayer(p);
 					playedArena.resetSchem();
+					KitType kitType = kitHandler.getKitType(p.getUniqueId());
+					PbKitHandler.getKit(kitType).setUltimateEnergy(p.getUniqueId(),0);
 				});
 				onGameEnd.run();
 				gameBoard = null;
@@ -505,7 +520,7 @@ public class PbGame {
 	public PbTeam findTeamWithMostPaints() {
 		// 使用 Java Streams API 找到涂色块最多的团队
 		Optional<PbTeam> teamWithMostPaints = teams.values().stream()
-				.max(Comparator.comparingInt(PbTeam::getPaintNum));
+				.max(Comparator.comparingDouble(PbTeam::getPaintNum));
 
 		// 返回找到的团队，或者可以根据需要处理 Optional
 		return teamWithMostPaints.orElse(null);

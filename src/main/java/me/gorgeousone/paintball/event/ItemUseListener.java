@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.UUID;
@@ -49,7 +50,21 @@ public class ItemUseListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-	
+	@EventHandler
+	public void onHandSwap(PlayerSwapHandItemsEvent event) {
+		Player player = event.getPlayer();
+
+		if (!lobbyHandler.isPlaying(player.getUniqueId())) return;
+
+		event.setCancelled(true);
+
+		if(lobbyHandler.getGame(player.getUniqueId()) == null) return;
+
+		lobbyHandler.getGame(player.getUniqueId()).useUltimateEnergy(player);
+
+
+	}
+
 	private boolean isMainHand(PlayerInteractEvent event) {
 		try {
 			return event.getHand() == EquipmentSlot.HAND;

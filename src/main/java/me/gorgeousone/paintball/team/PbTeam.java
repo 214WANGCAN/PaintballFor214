@@ -56,7 +56,7 @@ public class PbTeam {
 	private final Random rng = new Random();
 
 	// Paint count
-	private int paintNum;
+	private double paintNum;
 	
 	public PbTeam(TeamType teamType, PbGame game, JavaPlugin plugin, PbKitHandler kitHandler) {
 		this.teamType = teamType;
@@ -169,7 +169,8 @@ public class PbTeam {
 		paintNum = 0;
 	}
 
-	public void paintBlock(Block shotBlock, int blockCount, boolean showParticle) {
+	public void paintBlock(UUID playerId, Block shotBlock, int blockCount, boolean showParticle) {
+		game.addUltimateEnergy(playerId, (double) blockCount / 60);
 		TeamUtil.paintBlot(game,this,shotBlock, teamType, blockCount, 1,showParticle);
 	}
 	
@@ -195,9 +196,11 @@ public class PbTeam {
 			} else {
 				target.damage(2 * bulletDmg);
 			}
+			game.addUltimateEnergy(shooter.getUniqueId(),bulletDmg);
 		} else {
 			knockoutPlayer(target);
 			game.broadcastKill(target, shooter);
+			game.addUltimateEnergy(shooter.getUniqueId(),10);
 		}
 	}
 	
@@ -218,7 +221,7 @@ public class PbTeam {
 
 		// 死亡爆炸
 		PbTeam killerTeam = game.getDifferentTeam(this);
-		TeamUtil.paintBlot(game, killerTeam, player.getLocation().getBlock(), killerTeam.getType(), 40, 3, true);
+		TeamUtil.paintBlot(game, killerTeam, player.getLocation().getBlock(), killerTeam.getType(), 200, 5, true);
 
 
 		if (alivePlayers.isEmpty()) {
@@ -378,11 +381,11 @@ public class PbTeam {
 		inv.setArmorContents(teamArmorSet);
 	}
 
-	public int getPaintNum() {
+	public double getPaintNum() {
 		return paintNum;
 	}
 
-	public void setPaintNum(int paintNum) {
+	public void setPaintNum(double paintNum) {
 		this.paintNum = paintNum;
 	}
 

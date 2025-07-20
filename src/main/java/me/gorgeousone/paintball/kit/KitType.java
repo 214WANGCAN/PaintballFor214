@@ -20,7 +20,8 @@ public enum KitType {
 	MACHINE_GUN(69422),
 	SUBMACHINE_GUN(69423),
 	PAINTBUKKET(69424),
-	HANDGUN(69425);
+	HANDGUN(69425),
+	BRUSH(69426);
 	//	SNIPER;
 	
 	public String gunName;
@@ -68,6 +69,7 @@ public enum KitType {
 		SUBMACHINE_GUN.setDescription("彩弹冲锋枪", "高射速低稳定性 但上色率低 自带速度2");
 		PAINTBUKKET.setDescription("油漆桶", "低射速低稳定性 但能射出一大坨颜料!");
 		HANDGUN.setDescription("手枪", "还行的射速和一般的伤害 但是是双枪");
+		BRUSH.setDescription("刷子", "长按快速涂地，长按远程攻击!");
 //		SNIPER_RILE.setDescription(ChatColor.YELLOW + "Paintball Sniper", "Long range sniper rifle.", "Higher damage the longer scoped (sneak).")
 	}
 	
@@ -78,6 +80,7 @@ public enum KitType {
 		SUBMACHINE_GUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("DIAMOND_BARDING") : Material.valueOf("LEATHER_HORSE_ARMOR"));
 		PAINTBUKKET.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("WATER_BUCKET") : Material.valueOf("POWDER_SNOW_BUCKET"));
 		HANDGUN.setGunMaterial(Material.valueOf("WOODEN_HOE"));
+		BRUSH.setGunMaterial(Material.valueOf("BRUSH"));
 		//		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
 	}
 	

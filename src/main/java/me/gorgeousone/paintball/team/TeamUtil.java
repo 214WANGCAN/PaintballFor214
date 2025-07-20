@@ -136,18 +136,27 @@ public class TeamUtil {
 	}
 
 	public static void countCredit(Block block,PbTeam team, PbGame game) {
+
 		Material material = block.getType();
 
-		if(material == team.getType().blockColor.getType())
+		if(material == team.getType().blockColor.getType()) {
 			return;
-
+		}
 		PbTeam differTeam = game.getDifferentTeam(team);
+
+		double correct = 1;
+		if(team.getPlayers().size() < differTeam.getPlayers().size())
+			correct = (double) differTeam.getPlayers().size() / team.getPlayers().size();
+
 		if(material == differTeam.getType().blockColor.getType())
 		{
-			differTeam.setPaintNum(differTeam.getPaintNum() - 1);
+			if(team.getPlayers().size() > differTeam.getPlayers().size())
+				differTeam.setPaintNum(differTeam.getPaintNum() - (double) team.getPlayers().size() / differTeam.getPlayers().size());
+			else
+				differTeam.setPaintNum(differTeam.getPaintNum() - 1);
 		}
 
-		team.setPaintNum(team.getPaintNum()+1);
+		team.setPaintNum(team.getPaintNum() + 1 * correct);
 	}
 
 	public static void giveBlindnessToPlayer(PbTeam team, PbGame game,Player player)

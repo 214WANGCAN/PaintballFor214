@@ -12,7 +12,7 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class PaintBucketKit extends AbstractKit {
 	public PaintBucketKit(JavaPlugin plugin) {
-		super(KitType.PAINTBUKKET, (float)0.5, 16, .5f, .5f,3, 15,2,30,Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
+		super(KitType.PAINTBUKKET, (float)0.4, 16, 1.5f, .5f,3, 6,2,18,Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
 	}
 
 	@Override

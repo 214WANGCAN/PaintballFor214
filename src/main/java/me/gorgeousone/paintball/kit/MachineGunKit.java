@@ -39,7 +39,10 @@ public class MachineGunKit extends AbstractKit {
 	public boolean launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
 		UUID playerId = player.getUniqueId();
 		int magazine = getMagazine(playerId);
-		
+
+		if(super.isUsingUltimate.getOrDefault(player.getUniqueId(), false)) return launchUltimateShoot(player,team,gamePlayers);
+
+
 		if (magazine <= 0) {
 			return false;
 		}
@@ -56,7 +59,52 @@ public class MachineGunKit extends AbstractKit {
 		lastShots.put(playerId, System.currentTimeMillis());
 		return true;
 	}
-	
+
+	private boolean launchUltimateShoot(Player player, PbTeam team, Collection<Player> gamePlayers)
+	{
+		ShotOptions options = new ShotOptions();
+		options.fireRate = 1L;
+		options.bulletDmg = 0.5F;
+		boolean success = super.launchShot(player,team,gamePlayers,options);
+		if(success)
+		{
+			options.ignoreCooldown = true;
+			Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> {
+				super.launchShot(player,team,gamePlayers,options);
+			}, 25L);
+		}
+		return success;
+	}
+
+	@Override
+	public boolean useUltimateSkill(Player player, PbTeam team, Collection<Player> gamePlayers) {
+		if (!super.useUltimateSkill(player, team, gamePlayers)) return false;
+
+		UUID playerId = player.getUniqueId();
+		setUsingUltimate(playerId, true);
+
+		player.spigot().sendMessage(
+				net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
+				new net.md_5.bungee.api.chat.TextComponent("§a终极技能生效中 §7- §c射速提升!")
+		);
+
+		// 5 秒后恢复状态
+		Bukkit.getScheduler().runTaskLater(
+				JavaPlugin.getProvidingPlugin(getClass()),
+				() -> {
+					setUsingUltimate(playerId, false);
+					super.playGunshotSound(player,gamePlayers,Sound.BLOCK_BEACON_DEACTIVATE,1,1F,1F);
+					player.spigot().sendMessage(
+							net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
+							new net.md_5.bungee.api.chat.TextComponent("§c终极技能释放完毕")
+					);
+				},
+				100L
+		);
+
+		return true;
+	}
+
 	@Override
 	public void removePlayer(UUID playerId) {
 		super.removePlayer(playerId);
